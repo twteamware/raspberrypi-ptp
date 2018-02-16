@@ -78,7 +78,7 @@ whether `SOF_TIMESTAMPING_TX_SOFTWARE` is listed or not. If it's in the list,
 you can skip to the next section, otherwise patching is required.
 
 Required patch can be found in
-patches/0001-smsc95xx-use-generic-ethtool_op_get_ts_info-callback. You can
+[patches/0001-smsc95xx-use-generic-ethtool_op_get_ts_info-callback.patch](patches/0001-smsc95xx-use-generic-ethtool_op_get_ts_info-callback.patch). You can
 apply them with the `patch` command or with a git workflow in a separate branch
 as follow. Run these commands from within the linux kernel sources directory.
 
