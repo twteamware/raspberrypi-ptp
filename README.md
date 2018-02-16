@@ -69,10 +69,13 @@ page](https://www.raspberrypi.org/documentation/linux/kernel/building.md).
 
 ### Apply required patches
 
-The ethernet driver used by RaspberryPi which comes with current (4.9.y) kernel
-sources (smsc95xx) is missing support for software Tx timestamping feature.
-This fix is already available in mainline linux sources, but was not merged yet
-into the raspberry kernel sources.
+The ethernet driver for RaspberryPi (smsc95xx) which comes with current (4.9.y)
+kernel sources is missing support for software Tx timestamping feature.  This
+fix is already available in mainline linux sources, but was not merged yet into
+the raspberry kernel sources. If you use a more recent kernel and need to check
+if this patch is required or not, you can use the `ethtool` command to verify
+whether `SOF_TIMESTAMPING_TX_SOFTWARE` is listed or not. If it's in the list,
+you can skip to the next section, otherwise patching is required.
 
 Required patch can be found in
 patches/0001-smsc95xx-use-generic-ethtool_op_get_ts_info-callback. You can
@@ -123,3 +126,29 @@ sudo cp arch/arm/boot/zImage /boot/$KERNEL.img
 
 The RaspberryPi is now ready to run ptp4l and can be rebooted for changes to
 take effect.
+
+## Troubleshooting
+
+* As mentioned above, you can use `ethtool` to verify that software Tx
+timestamping is available on the ethernet interface. The expected output of the
+command should be:
+
+```
+pi@raspberrypi:~ $ ethtool -T eth0
+Time stamping parameters for eth0:
+Capabilities:
+        software-transmit     (SOF_TIMESTAMPING_TX_SOFTWARE)
+        software-receive      (SOF_TIMESTAMPING_RX_SOFTWARE)
+        software-system-clock (SOF_TIMESTAMPING_SOFTWARE)
+PTP Hardware Clock: none
+Hardware Transmit Timestamp Modes: none
+Hardware Receive Filter Modes: none
+```
+
+If you don't see `SOF_TIMESTAMPING_TX_SOFTWARE` listed, either you skipped
+patching the kernel, or something went wrong with the patch itself
+
+* ptp4l is automatically started as a systemd service at boot in Raspbian. You
+can inspect the service status with `systemctl status ptp4l`. If in the log the
+message `failed to create a clock` appears, it likely means the required kernel
+configuration bits were not enabled.
