@@ -29,7 +29,7 @@ messages sent from the master (in nanoseconds).
 
 The below pictures show the graph of the output data of ptp4l of 15 hours run.
 
-### Raspberrypi3
+### RaspberryPi3
 
 ![test-bench](images/raspberry.png)
 
@@ -39,7 +39,7 @@ Calculated offsets:
 | --- | --- | --- |
 | 21.5us | -448us | 797us |
 
-### Raspberrypi3 (4 hours focus)
+### RaspberryPi3 (4 hours focus)
 
 ![test-bench](images/raspberry_zoom.png)
 
