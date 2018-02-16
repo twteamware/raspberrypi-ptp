@@ -1,0 +1,29 @@
+From 4ce7127f92746768bda9606e64b7dab9e6c3097d Mon Sep 17 00:00:00 2001
+From: Andrea Galbusera <gizero@gmail.com>
+Date: Mon, 29 May 2017 14:49:16 +0200
+Subject: [PATCH] smsc95xx: use generic ethtool_op_get_ts_info callback
+
+This generic callback is for drivers which have software Tx timestamp
+support enabled. Without this, PTP applications requesting software
+timestamps may complain that the requested mode is not supported.
+
+Signed-off-by: Andrea Galbusera <gizero@gmail.com>
+---
+ drivers/net/usb/smsc95xx.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
+index b84e985..9befba3 100644
+--- a/drivers/net/usb/smsc95xx.c
++++ b/drivers/net/usb/smsc95xx.c
+@@ -911,6 +911,7 @@ static const struct ethtool_ops smsc95xx_ethtool_ops = {
+ 	.get_regs	= smsc95xx_ethtool_getregs,
+ 	.get_wol	= smsc95xx_ethtool_get_wol,
+ 	.set_wol	= smsc95xx_ethtool_set_wol,
++	.get_ts_info	= ethtool_op_get_ts_info,
+ };
+ 
+ static int smsc95xx_ioctl(struct net_device *netdev, struct ifreq *rq, int cmd)
+-- 
+2.7.4
+
