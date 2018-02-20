@@ -13,15 +13,14 @@ more details or troubleshooting informations.
 ### Apply required patches
 
 GPIO PPS generator is implemented by a kernel module. Required patch can be
-found in
-[patches/0001-smsc95xx-use-generic-ethtool_op_get_ts_info-callback.patch](patches/0001-smsc95xx-use-generic-ethtool_op_get_ts_info-callback.patch).
-You can apply them with the `patch` command or with a git workflow in a
-separate branch as follow. Run these commands from within the linux kernel
-sources directory.
+found in [patches/](patches/).  You can apply them with the `patch` command or
+with a git workflow in a separate branch as follow. Run these commands from
+within the linux kernel sources directory.
 
 ```
 git checkout -b pps-generator-patches
-git am <path-to-this-repo>/patches/000{2,3}
+git am <path-to-this-repo>/patches/0001-pps-add-gpio-PPS-signal-generator.patch
+git am <path-to-this-repo>/patches/0002-add-DT-overlay-for-pps-gen-gpio-generator.patch
 ```
 
 ### Apply required configuration changes
