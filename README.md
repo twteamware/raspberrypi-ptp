@@ -3,10 +3,11 @@
 This guide explains how to enable support for Precision Time Protocol (PTP) to
 a Raspberrypi3 running the Raspbian operating system.
 
-This notes were tested with Raspbian Stretch Lite (2017-11-29). The following
-type of tasks are required to have a working PTP client on the Raspberry:
+This notes were tested with Raspbian Stretch Lite (2018-10-09), running kernel
+4.14.71. The following type of tasks are required to have a working PTP client
+on the Raspberry:
 
-* linux kernel must be patched, configured, built and deployed to the target
+* linux kernel must be configured, built and deployed to the target
 * additional packages must be installed and configured
 
 ## Preliminary operations
@@ -37,18 +38,21 @@ sudo apt install ethtool linuxptp
 ## Enable software timestamping in ptp4l configuration
 
 Raspberry Pi ethernet phy does not support hardware timestamping: hence
-software emulation must be enable in ptp4l configuration. It can be done by
+software emulation must be enabled in ptp4l configuration. It can be done by
 patching ptp4l configuration file as follows:
 
 ```
 sed -i -e 's/time_stamping.*$/time_stamping\t\tsoftware/' /etc/linuxptp/ptp4l.conf
 ```
 
-ptp4l will start automatically at boot, but it fails with current kernel which
-misses a patch to the ethernet driver and some required configuration non
-enabled by Raspbian by default.
+Less recent kernels required patching the ethernet driver to overcome a
+limitation with frame timestamping. With those kernels, ptp4l fails to start
+while complaining for missing support for timestamping. If you are running
+ older kernels, please either consider upgrading or see
+[here](kernel-patching.md) for instructions on patching the kernel and fix
+the timestamping feature.
 
-## Build a new kernel with enabled PTP support
+## Build a new kernel with PTP support enabled
 
 In order to build the kernel with required patches and configuration options,
 kernel sources must be fetched and some required build tools must be installed.
@@ -67,26 +71,6 @@ This will build the kernel in its default configuration and will take a
 [kernel building raspberrypi.org official
 page](https://www.raspberrypi.org/documentation/linux/kernel/building.md).
 
-### Apply required patches
-
-The ethernet driver for RaspberryPi (smsc95xx) which comes with current (4.9.y)
-kernel sources is missing support for software Tx timestamping feature.  This
-fix is already available in mainline linux sources, but was not merged yet into
-the raspberry kernel sources. If you use a more recent kernel and need to check
-if this patch is required or not, you can use the `ethtool` command to verify
-whether `SOF_TIMESTAMPING_TX_SOFTWARE` is listed or not. If it's in the list,
-you can skip to the next section, otherwise patching is required.
-
-Required patch can be found in
-[patches/0001-smsc95xx-use-generic-ethtool_op_get_ts_info-callback.patch](patches/0001-smsc95xx-use-generic-ethtool_op_get_ts_info-callback.patch). You can
-apply them with the `patch` command or with a git workflow in a separate branch
-as follow. Run these commands from within the linux kernel sources directory.
-
-```
-git checkout -b ptp-patches
-git am <path-to-this-repo>/patches/0001-smsc95xx-use-generic-ethtool_op_get_ts_info-callback
-```
-
 ### Apply required configuration changes
 
 Some extra configuration options must be applied to the default
@@ -103,7 +87,7 @@ The above commands work if you already built the default kernel before applying
 the pathes. Otherwise you can enable them manually with any default kernel
 configuration target like `make menuconfig`.
 
-### Build kernel with PTP related changes
+### Build kernel with PTP enabling changes
 
 It is now possible to build the kernel with the changes we made to support PTP:
 
@@ -145,8 +129,9 @@ Hardware Transmit Timestamp Modes: none
 Hardware Receive Filter Modes: none
 ```
 
-If you don't see `SOF_TIMESTAMPING_TX_SOFTWARE` listed, either you skipped
-patching the kernel, or something went wrong with the patch itself
+If you don't see `SOF_TIMESTAMPING_TX_SOFTWARE` listed, you might be running an
+older kernel which requires patching the timestamping support (see
+[kernel-patching.md](kernel-patching.md)).
 
 * ptp4l is automatically started as a systemd service at boot in Raspbian. You
 can inspect the service status with `systemctl status ptp4l`. If in the log the
