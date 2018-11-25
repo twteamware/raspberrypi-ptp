@@ -78,7 +78,6 @@ Some extra configuration options must be applied to the default
 within the linux kernel sources directory.
 
 ```
-echo 'CONFIG_NET_PTP_CLASSIFY=y' >> .config
 echo 'CONFIG_NETWORK_PHY_TIMESTAMPING=y' >> .config
 echo 'CONFIG_PTP_1588_CLOCK=y' >> .config
 ```
