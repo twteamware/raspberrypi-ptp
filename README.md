@@ -110,6 +110,11 @@ sudo cp arch/arm/boot/zImage /boot/$KERNEL.img
 The RaspberryPi is now ready to run ptp4l and can be rebooted for changes to
 take effect.
 
+If you want to cross-compile the kernel on a faster host instead of running the
+process on the Raspberrypi itself, please refer to the general kernel
+cross-compile instruction
+[here](https://www.raspberrypi.org/documentation/linux/kernel/building.md).
+
 ## Troubleshooting
 
 * As mentioned above, you can use `ethtool` to verify that software Tx
